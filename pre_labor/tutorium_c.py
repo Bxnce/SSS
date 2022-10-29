@@ -194,4 +194,6 @@ m_max_column = m.max(axis=0) #max from each column
 m_max_row = m.max(axis=1) #max from each row
 
 
-print(mean_feb)
+x = ones((5, 5))
+x[2][1] = 2
+print(x)
