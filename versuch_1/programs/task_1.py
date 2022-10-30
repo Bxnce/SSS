@@ -142,27 +142,46 @@ def empirische_standardabweichung_x_strich():
 def correct_form(faktor, std_faktor=1):
     data = read_data("../messungen/din_a4/laenge.csv")
     mean = get_mean(data)
-    form = f"x = {mean} +- {faktor} * {std_faktor}{empirische_standardabweichung_x_strich()} = {mean - faktor * std_faktor * empirische_standardabweichung_x_strich()} [V] bis {mean + faktor * std_faktor * empirische_standardabweichung_x_strich()} [V] : Vertrauensbereich = [+-]{std_faktor}*{empirische_standardabweichung_x_strich()}" 
+    form = f"x = {mean} +- {faktor} * {std_faktor}{empirische_standardabweichung_x_strich()} = Vertrauensbereich: {mean + faktor * std_faktor * empirische_standardabweichung_x_strich()}" 
     return form
 
-def fehlerfort(x):
-    data = read_data("../messungen/din_a4/laenge.csv")
+def fehlerfort(x, y, path):
+    data = read_data(path)
     mean = get_mean(data)
     #abs_fehler_x = x - mean
     abs_fehler_x = empirische_standardabweichung_x_strich()
     #a = calc_a([np.log(mean)], [np.log(29.7)]) ??
-    a = np.log(29.7) / np.log(mean)
-    b = calc_b([np.log(mean)], [np.log(29.7)], a)
+    a = np.log(y) / np.log(mean)
+    b = calc_b([np.log(mean)], [np.log(y)], a)
     abs_fehler_y = (pow(math.e, b) * a * pow(x, a-1)) * abs_fehler_x 
-    y = pow(math.e,b)*pow(mean, a)
+    y = pow(math.e,b)*pow(mean, a) #y von x
     return (y, abs_fehler_y)
+
+def flaeche():
+    l_y,l_f = fehlerfort(0.71093750, 29.7, "../messungen/din_a4/laenge.csv")
+    b_y,b_f = fehlerfort(0.91676920, 21.0, "../messungen/din_a4/breite.csv")
+    area = l_y * b_y
+    messfehler = np.sqrt(pow(l_y * l_f, 2)+pow(b_y * b_f, 2))
+    return f"Flaeche: {area}cm^2; Messfehler: +-{messfehler}cm^2"
+    
+def do_1():
+    tuple_list = do_all()
+    log_in, log_out = create_log_of_data(tuple_list)
+    plot_data(tuple_list)
+    
+def do_2():
+    plot_logs(log_in, log_out)
+    plot_lin_reg_log(log_in, log_out)
+    plot_lin_reg(log_in, log_out, tuple_list)
+    
+def do_3():
+    print("68%::" + correct_form(1, 1))
+    print("95%::" + correct_form(1.96, 2))
+    cm, pm = fehlerfort(0.71093750, 29.7, "../messungen/din_a4/laenge.csv")
+    print(f"{cm}cm mit absolutem Fehler: +{pm}")
+    print(flaeche())
     
 if __name__ == "__main__":
-    #tuple_list = do_all()
-    #log_in, log_out = create_log_of_data(tuple_list)
-    #plot_data(tuple_list)
-    #plot_logs(log_in, log_out)
-    #plot_lin_reg_log(log_in, log_out)
-    #plot_lin_reg(log_in, log_out, tuple_list)
-    print(correct_form(1.96, 2))
-    print(f"29.7cm mit absolutem Fehler: {fehlerfort(0.71093750)}")
+    #do_1()
+    #do_2()
+    do_3()
