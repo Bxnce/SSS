@@ -48,7 +48,7 @@ def plot_data(tuple_list):
     axes.set_title('Mean of the measurement')
     axes.set_xlabel('Distance')
     axes.set_ylabel('V')
-    plt.savefig(f"../pics/task1{str(datetime.now()).replace(' ', '_').replace(':', '_')}.png")
+    plt.savefig(f"../pics/task1_{str(datetime.now()).replace(' ', '_').replace(':', '_')}.png")
 
 # Number 2
 def create_log_of_data(tuple_list):
@@ -99,8 +99,6 @@ def plot_lin_reg(log_in, log_out, tuple_list):
     axes.set_title('Linear regression with "trick" on not linear function')
     axes.set_xlabel('distance in cm')
     axes.set_ylabel('voltage in V')
-    
-    
     data_y = []
     for value in tuple_list:
         data_y.append(value[1])
@@ -123,10 +121,48 @@ def plot_lin_reg_log(log_in, log_out):
     plt.scatter(log_in, log_out, marker="o")    
     plt.savefig(f"../pics/task2_regression_log{str(datetime.now()).replace(' ', '_').replace(':', '_')}.png")  #sehr viel linearer als der erste plot
 
+#number 3
+
+#def empirische_standardabweichung_x_strich():
+#    data = read_data("../messungen/din_a4/laenge.csv")
+#    front = 1/(len(data) - 1)
+#    mean = get_mean(data)
+#    back = 0
+#    for i in data[:,1]:
+#        back += pow(mean - i, 2)
+#    std = np.sqrt(front*back)
+#    return std/np.sqrt(len(data))
+
+def empirische_standardabweichung_x_strich():
+    data = read_data("../messungen/din_a4/laenge.csv")
+    std = np.std(data[:,1])
+    return std/np.sqrt(len(data))
+
+
+def correct_form(faktor, std_faktor=1):
+    data = read_data("../messungen/din_a4/laenge.csv")
+    mean = get_mean(data)
+    form = f"x = {mean} +- {faktor} * {std_faktor}{empirische_standardabweichung_x_strich()} = {mean - faktor * std_faktor * empirische_standardabweichung_x_strich()} [V] bis {mean + faktor * std_faktor * empirische_standardabweichung_x_strich()} [V] : Vertrauensbereich = [+-]{std_faktor}*{empirische_standardabweichung_x_strich()}" 
+    return form
+
+def fehlerfort(x):
+    data = read_data("../messungen/din_a4/laenge.csv")
+    mean = get_mean(data)
+    #abs_fehler_x = x - mean
+    abs_fehler_x = empirische_standardabweichung_x_strich()
+    #a = calc_a([np.log(mean)], [np.log(29.7)]) ??
+    a = np.log(29.7) / np.log(mean)
+    b = calc_b([np.log(mean)], [np.log(29.7)], a)
+    abs_fehler_y = (pow(math.e, b) * a * pow(x, a-1)) * abs_fehler_x 
+    y = pow(math.e,b)*pow(mean, a)
+    return (y, abs_fehler_y)
+    
 if __name__ == "__main__":
-   tuple_list = do_all()
-   log_in, log_out = create_log_of_data(tuple_list)
-   plot_data(tuple_list)
-   plot_logs(log_in, log_out)
-   plot_lin_reg_log(log_in, log_out)
-   plot_lin_reg(log_in, log_out, tuple_list)
+    #tuple_list = do_all()
+    #log_in, log_out = create_log_of_data(tuple_list)
+    #plot_data(tuple_list)
+    #plot_logs(log_in, log_out)
+    #plot_lin_reg_log(log_in, log_out)
+    #plot_lin_reg(log_in, log_out, tuple_list)
+    print(correct_form(1.96, 2))
+    print(f"29.7cm mit absolutem Fehler: {fehlerfort(0.71093750)}")
