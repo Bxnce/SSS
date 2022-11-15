@@ -3,9 +3,8 @@ import sys
 import numpy
 import numpy as np
 import pandas as pd
-import openpyxl
 
-numpy.set_printoptions(threshold=sys.maxsize)  # to print all lines of a numpy array without truncation
+numpy.set_printoptions(threshold=sys.maxsize)  # print all lines of a numpy array without truncation
 
 # ranges of the different gray zones in the picture
 RANGE_1 = (0, 128)
@@ -23,7 +22,7 @@ gray_5 = np.array([])
 
 
 def write_to_file(arr):
-    with open(f"./arrays/graukeil.txt", 'w+') as file:
+    with open(f"arrays/graukeil.txt", 'w+') as file:
         file.write(arr + "\n")
     pass
 
