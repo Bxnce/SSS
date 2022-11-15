@@ -59,8 +59,8 @@ def slice_sub_pictures(picture_array):
     gray_5 = np.array(tmp5)
 
 
-if __name__ == "__main__":
-    graukeil = cv2.imread("./images/grau1.png", 0)
+def task1(pic_path):
+    graukeil = cv2.imread(pic_path, 0)
     graukeil_ohne_rand = remove_border(graukeil)
     slice_sub_pictures(graukeil_ohne_rand)
 
@@ -78,5 +78,7 @@ if __name__ == "__main__":
                        [np.mean(gray_4), np.std(gray_4)], [np.mean(gray_5), np.std(gray_5)]],
                       index=["gray_1", "gray_2", "gray_3", "gray_4", "gray_5"], columns=["mean", "std"])
 
-    df.to_excel('mean_and_std_of_scale.xlsx')
+    df.to_excel(f'{pic_path}.xlsx')
 
+if __name__ == "__main__":
+    task1("./images/grau1.png")
