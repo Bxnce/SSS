@@ -32,7 +32,14 @@ def full_correct_pic(pic_path):
     cv2.imwrite(f"{pic_path.removesuffix('.png')}_corrected.png", picture)
 
 
+def maximized_contrast(pic_path):
+    picture = cv2.imread(pic_path, 0)
+    picture = cv2.convertScaleAbs(picture, alpha=3, beta=0)  # alpha(0-3) = contrast, beta(0-100) = brightness
+    cv2.imwrite(f"{pic_path.removesuffix('.png')}_maximized.png", picture)
+
+
 if __name__ == "__main__":
     read_black_images()
     test = get_mean_of_pixel()
     full_correct_pic("./images/grau1.png")
+    maximized_contrast("./images/dunkelbild.png")

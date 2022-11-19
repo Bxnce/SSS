@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 
 from task2 import full_correct_pic
+from task2 import maximized_contrast
 
 WHITE_IMAGES = []
 
@@ -29,3 +30,4 @@ def subtract_black_from_white():
 if __name__ == "__main__":
     read_white_images()
     subtract_black_from_white()
+    maximized_contrast("./images/weissbild.png")
