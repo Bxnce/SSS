@@ -6,6 +6,11 @@ from datetime import datetime
 
 import scipy
 
+FORMAT = pyaudio.paInt16
+SAMPLEFREQ = 44100
+FRAMESIZE = 1024
+NOFFRAMES = 220
+TIMESTAMP = datetime.now().strftime('%Y%m%d_%H%M%S')
 
 def trigger(data, threshhold):
     data_n = []
@@ -17,16 +22,18 @@ def trigger(data, threshhold):
     return data_n
 
 
-def fourier_transformed(data):
+def fourier_transformed(data): # Amplitudenspektrum
     data_ft = numpy.fft.fft(data)
     spektrum = np.abs(data_ft)  # negative Werte entfernen
-    # frequenz = np.array([x / (SAMPLEFREQ) for x in range(0, len(spektrum), 1)])
 
-    plt.plot(range(len(spektrum)), spektrum)
-    plt.xlabel('Frequency in Hz')
-    plt.ylabel('Amplitude in V')
-    plt.grid(True)
-    plt.savefig(f"./plots/plot_fourier.png")
+    fig, ax = plt.subplots()
+    ax.plot(range(len(spektrum)), spektrum)
+    ax.set_title('amplitude spectrum without windowing')
+    ax.set_xlabel('Frequency in Hz')
+    ax.set_ylabel('Amplitude in V')
+    ax.grid(True)
+    fig.savefig("./plots/plot_fourier.png")
+    fig.show()
 
 
 def windowing(data):
@@ -41,42 +48,50 @@ def windowing(data):
     return mean_ft
 
 
-def plot_windowing(file_name, word):
-    data = np.load('aufnahmen/Aufgabe_1a_trigger_20221212_162030.npy')
+def plot_windowing():
+    data = np.load(f'aufnahmen/Aufgabe_1a_trigger_{TIMESTAMP}.npy')
     fft = windowing(data)
-    plt.plot(fft)
-    plt.ylabel('amplitude')
-    plt.xlabel('frequency [Hz]')
-    plt.title(f'amplitude spectrum \"{word}\"')
-    plt.savefig(f'plots/test_spectrum.png')
-    plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(fft)
+    ax.set_ylabel('amplitude')
+    ax.set_xlabel('frequency [Hz]')
+    ax.set_title('amplitude spectrum n1a windowing')
+    fig.savefig('plots/test_spectrum.png')
+    fig.show()
 
+def record():
+    p = pyaudio.PyAudio()
+    print("running")
+    stream = p.open(format=FORMAT, channels=1, rate=SAMPLEFREQ,
+                    input=True, frames_per_buffer=FRAMESIZE)
+    data = stream.read(NOFFRAMES * FRAMESIZE)
+    decoded = numpy.frombuffer(data, numpy.int16)
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    print("done")
+    return decoded
 
 if __name__ == '__main__':
-    # FORMAT = pyaudio.paInt16
-    # SAMPLEFREQ = 44100
-    # FRAMESIZE = 1024
-    # NOFFRAMES = 220
-    # p = pyaudio.PyAudio()
-    # print("running")
-    # stream = p.open(format=FORMAT, channels=1, rate=SAMPLEFREQ,
-    #                 input=True, frames_per_buffer=FRAMESIZE)
-    # data = stream.read(NOFFRAMES * FRAMESIZE)
-    # decoded = numpy.frombuffer(data, numpy.int16)
-    # stream.stop_stream()
-    # stream.close()
-    # p.terminate()
-    # print("done")
-    # # plt.plot(decoded)
-    # decoded_with_trigger = trigger(decoded, 700)
-    # # plt.plot(decoded_with_trigger)
-    # fourier_transformed(decoded_with_trigger)
-    #
-    # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    #
-    # # plt.savefig(f"plots/Aufgabe_1a_{timestamp}")
-    # # plt.show()
-    # print(decoded.shape)
-    # np.save(f"aufnahmen/Aufgabe_1a_{timestamp}.npy", decoded)
-    # np.save(f"aufnahmen/Aufgabe_1a_trigger_{timestamp}.npy", decoded_with_trigger)
-    plot_windowing("cgasd", "sdasedbsfbwa")
+    pass
+    decoded = record()
+    fig, ax = plt.subplots()
+    ax.plot(decoded)
+    ax.set_title('raw data')
+    ax.set_xlabel('timestamps')
+    ax.set_ylabel('amplitude')
+    decoded_with_trigger = trigger(decoded, 700)
+    fig2, ax = plt.subplots()
+    ax.plot(decoded_with_trigger)
+    ax.set_title('triggered')
+    ax.set_xlabel('timestamps')
+    ax.set_ylabel('amplitude')
+    fig2.savefig(f"./plots/plot_trigger_{TIMESTAMP}.png")
+    fig2.show()
+    fourier_transformed(decoded_with_trigger)
+
+    fig.savefig(f"plots/Aufgabe_1a_{TIMESTAMP}")
+    fig.show()
+    np.save(f"aufnahmen/Aufgabe_1a_{TIMESTAMP}.npy", decoded)
+    np.save(f"aufnahmen/Aufgabe_1a_trigger_{TIMESTAMP}.npy", decoded_with_trigger)
+    plot_windowing()
