@@ -3,7 +3,6 @@ import pyaudio
 import numpy
 import matplotlib.pyplot as plt
 from datetime import datetime
-
 import scipy
 
 FORMAT = pyaudio.paInt16
