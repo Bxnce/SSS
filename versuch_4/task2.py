@@ -54,14 +54,32 @@ def comparsion():
         ref_data = np.load(f"recorded/reference/{name}_reference_spectrum.npy")
         for name2 in names:
             for i in range(0,5):
-                print(f"compared with {name2}_{i}:      {pearson(ref_data, np.load(f'recorded/reference/{name2}_{i}.npy'))}")
+                res = pearson(ref_data, np.load(f'recorded/reference/{name2}_{i}.npy'))
+                print(f"compared with {name2}_{i}:      {res}")
     print("------------stats.pearsonr------------")
-    for name in names:
-        print("reference comparsion for: ", name)
-        ref_data = np.load(f"recorded/reference/{name}_reference_spectrum.npy")
-        for name2 in names:
+    #for name in names:
+    #    print("reference comparsion for: ", name)
+    #    ref_data = np.load(f"recorded/reference/{name}_reference_spectrum.npy")
+    #    for name2 in names:
+    #        for i in range(0,5):
+    #            print(f"compared with {name2}_{i}:      {stats.pearsonr(ref_data, windowing(np.load(f'recorded/test_data/{name2}_{i}.npy')))}")
+
+def hit_percentage():
+    names = ["hoch", "tief", "links", "rechts"]
+    file_names = [""]#, "timo_"]
+    end_res = {"hoch": 0, "tief": 0, "links": 0, "rechts": 0}
+    for speaker in file_names:
+        for name in names:
+            print(f"comparsion for {speaker}{name}")
             for i in range(0,5):
-                print(f"compared with {name2}_{i}:      {stats.pearsonr(ref_data, windowing(np.load(f'recorded/test_data/{name2}_{i}.npy')))}")
+                res = erkenner(np.load(f'recorded/test_data/{speaker}{name}_{i}.npy'))
+                if name == res:
+                    print(f"{name} hit as {res}")
+                    end_res[name] += 1
+                else:
+                    print(f"{name} no hit {res}")
+    for re in end_res:
+        print(f"{re}: {end_res[re]}/5")
 
 def erkenner(data):
     names = ["hoch", "tief", "links", "rechts"]
@@ -83,5 +101,6 @@ if __name__ == '__main__':
     #plot_refs()
     #----------------b----------------
     #comparsion()
-    res = erkenner(np.load("recorded/test_data/rechts_3.npy"))
-    print(res)
+    #res = erkenner(np.load("recorded/test_data/rechts_3.npy"))
+    #print(res)
+    hit_percentage()
