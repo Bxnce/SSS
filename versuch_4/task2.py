@@ -1,7 +1,7 @@
 import scipy
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import stats
+from scipy import signal
 
 
 def windowing(data):
@@ -66,7 +66,7 @@ def comparsion():
 
 def hit_percentage():
     names = ["hoch", "tief", "links", "rechts"]
-    file_names = [""]#, "timo_"]
+    file_names = ["", "timo_"]
     end_res = {"hoch": 0, "tief": 0, "links": 0, "rechts": 0}
     for speaker in file_names:
         for name in names:
@@ -78,8 +78,10 @@ def hit_percentage():
                     end_res[name] += 1
                 else:
                     print(f"{name} no hit {res}")
-    for re in end_res:
-        print(f"{re}: {end_res[re]}/5")
+        for re in end_res:
+            print(f"{re}: {end_res[re]}/5")
+        end_res = {"hoch": 0, "tief": 0, "links": 0, "rechts": 0}
+
 
 def erkenner(data):
     names = ["hoch", "tief", "links", "rechts"]
@@ -104,3 +106,15 @@ if __name__ == '__main__':
     #res = erkenner(np.load("recorded/test_data/rechts_3.npy"))
     #print(res)
     hit_percentage()
+
+# Hits Bence
+# hoch: 5/5
+# tief: 0/5
+# links: 5/5
+# rechts: 1/5
+#
+# Hits Timo
+# hoch: 2/5
+# tief: 2/5
+# links: 0/5
+# rechts: 4/5
