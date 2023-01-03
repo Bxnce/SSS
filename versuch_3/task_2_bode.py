@@ -6,9 +6,9 @@ import numpy as np
 if __name__ == "__main__":
     data = Task2()
 
-    amplitude_big = [20 * np.log10(1 / data.big_ptpbavg[x]) for x in range(0, len(data.big_ptpaavg))]
+    amplitude_big = [20 * np.log10(data.big_ptpbavg[x]) for x in range(0, len(data.big_ptpaavg))]
 
-    amplitude_small = [20 * np.log10(1 / data.small_ptpbavg[x])for x in range(0, len(data.small_ptpbavg))]
+    amplitude_small = [20 * np.log10(data.small_ptpbavg[x])for x in range(0, len(data.small_ptpbavg))]
 
     plt.plot(data.fq, amplitude_small, 'b', label='small speaker')
     plt.plot(data.fq, amplitude_big, 'y', label='big speaker')
